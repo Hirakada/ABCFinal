@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ABC Final Assignemnt</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    
+    <main class="main-container">
+        <section class="left-container">
+            <div class="car-container" id="car-container"></div>
+
+            <div class="customer-form">
+                <h2>Formulir Pelanggan</h2>
+                <label for="customer-name">Nama Pelanggan:</label>
+                <input type="text" id="customer-name" placeholder="Masukkan nama" />
+                <button id="calculate-button">Hitung Total</button>
+                <div id="order-detail" class="summary"></div>
+                <button id="save-button">Simpan Pemesanan</button>
+            </div>
+        </section>
+        <section class="right-container">
+            <h2>Daftar Pemesanan</h2>
+            <div class="customer-orders" id="customer-orders"></div>
+        </section>
+    </main>
+    <script type="module" src="./main.js"></script>
 </body>
 </html>

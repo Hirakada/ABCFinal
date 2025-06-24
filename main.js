@@ -1,35 +1,38 @@
 import { cars } from './car.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('car-container');
+    const carContainer = document.getElementById('car-container');
     const orderDetail = document.getElementById('order-detail');
     const saveButton = document.getElementById('save-button');
+    const calculateButton = document.getElementById('calculate-button');
     const customerOrders = document.getElementById('customer-orders');
-    const nameInput = document.getElementById('customer-name');
+    const customerName = document.getElementById('customer-name');
 
-    cars.forEach((car, index) => {
-        const card = document.createElement('div');
-        card.className = 'card-car';
+    cars.forEach((carData) => {
+        const carCard = document.createElement('div');
+        carCard.className = 'card-car';
 
-        const img = document.createElement('img');
-        img.src = car.image;
-        img.alt = `${car.name} image`;
+        const carImage = document.createElement('img');
+        carImage.src = carData.image;
+        carImage.alt = `${carData.name} image`;
 
-        const name = document.createElement('p');
-        name.className = 'car-name';
-        name.textContent = car.name;
+        const carName = document.createElement('p');
+        carName.className = 'car-name';
+        carName.textContent = carData.name;
 
-        const price = document.createElement('p');
-        price.className = 'car-price';
-        price.textContent = `Rp ${car.price.toLocaleString('id-ID')} / hari`;
+        const carPrice = document.createElement('p');
+        carPrice.className = 'car-price';
+        carPrice.textContent = `Rp ${carData.price.toLocaleString('id-ID')} / hari`;
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'car-checkbox';
+        const carCheckbox = document.createElement('input');
+        carCheckbox.type = 'checkbox';
+        carCheckbox.className = 'car-checkbox';
+        carCheckbox.dataset.name = carData.name;
+        carCheckbox.dataset.price = carData.price;
 
-        const inputBox = document.createElement('div');
-        inputBox.className = 'rental-inputs';
-        inputBox.style.display = 'none';
+        const inputWrapper = document.createElement('div');
+        inputWrapper.className = 'rental-inputs';
+        inputWrapper.style.display = 'none';
 
         const today = new Date().toISOString().split('T')[0];
 
@@ -37,77 +40,80 @@ document.addEventListener('DOMContentLoaded', () => {
         startRow.className = 'input-row';
         const startLabel = document.createElement('label');
         startLabel.textContent = 'Start:';
-        const startInput = document.createElement('input');
-        startInput.type = 'date';
-        startInput.value = today;
-        startInput.min = today;
-        startRow.append(startLabel, startInput);
+        const startDate = document.createElement('input');
+        startDate.type = 'date';
+        startDate.value = today;
+        startDate.min = today;
+        startDate.className = 'start-date';
+        startRow.append(startLabel, startDate);
 
         const durationRow = document.createElement('div');
         durationRow.className = 'input-row';
         const durationLabel = document.createElement('label');
         durationLabel.textContent = 'Durasi (hari):';
-        const durationInput = document.createElement('input');
-        durationInput.type = 'number';
-        durationInput.min = 1;
-        durationInput.value = 1;
-        durationRow.append(durationLabel, durationInput);
+        const duration = document.createElement('input');
+        duration.type = 'number';
+        duration.min = 1;
+        duration.value = 1;
+        duration.className = 'duration';
+        durationRow.append(durationLabel, duration);
 
-        inputBox.append(startRow, durationRow);
+        inputWrapper.append(startRow, durationRow);
 
-        checkbox.addEventListener('change', () => {
-            inputBox.style.display = checkbox.checked ? 'flex' : 'none';
+        carCheckbox.addEventListener('change', () => {
+            inputWrapper.style.display = carCheckbox.checked ? 'flex' : 'none';
         });
 
-        card.append(img, name, price, checkbox, inputBox);
-        container.appendChild(card);
+        carCard.append(carImage, carName, carPrice, carCheckbox, inputWrapper);
+        carContainer.appendChild(carCard);
     });
 
-    document.getElementById('calculate-button').addEventListener('click', () => {
-        const checked = document.querySelectorAll('.car-checkbox:checked');
-        if (!nameInput.value.trim()) return alert('Atas nama siapa ya?');
-        if (!checked.length) return alert('KOSONG?! Rugi donk!!');
+    calculateButton.addEventListener('click', () => {
+        const checkedBoxes = document.querySelectorAll('.car-checkbox:checked');
+        if (!customerName.value.trim()) return alert('Atas nama siapa ya?');
+        if (!checkedBoxes.length) return alert('KOSONG?! Rugi dong!!');
 
         let total = 0;
         let summary = '';
 
-        checked.forEach(box => {
-            const card = box.closest('.card-car');
-            const carName = card.querySelector('.car-name').textContent;
-            const price = Number(card.querySelector('.car-price').textContent.replace(/\D/g, ''));
-            const days = Number(card.querySelector('input[type="number"]').value);
-            const startDate = card.querySelector('input[type="date"]').value;
+        checkedBoxes.forEach((checkbox) => {
+            const card = checkbox.closest('.card-car');
+            const name = checkbox.dataset.name;
+            const price = Number(checkbox.dataset.price);
+            const start = card.querySelector('.start-date').value;
+            const days = Number(card.querySelector('.duration').value);
             const subtotal = price * days;
 
             total += subtotal;
-            summary += `• ${carName} - ${startDate} - ${days} hari - Rp ${subtotal.toLocaleString('id-ID')}\n`;
+            summary += `• ${name} - ${start} - ${days} hari - Rp ${subtotal.toLocaleString('id-ID')}\n`;
         });
 
-        orderDetail.textContent = `Nama: ${nameInput.value}\n\nMobil Disewa:\n${summary}\nTotal Harga: Rp ${total.toLocaleString('id-ID')}`;
+        orderDetail.textContent = `Nama: ${customerName.value}\n\nMobil Disewa:\n${summary}\nTotal Harga: Rp ${total.toLocaleString('id-ID')}`;
     });
 
     saveButton.addEventListener('click', () => {
-        const checked = document.querySelectorAll('.car-checkbox:checked');
-        if (!nameInput.value.trim()) return alert('Atas nama siapa ya?');
-        if (!checked.length) return alert('KOSONG?! Rugi donk!!');
+        const checkedBoxes = document.querySelectorAll('.car-checkbox:checked');
+        if (!customerName.value.trim()) return alert('Atas nama siapa ya?');
+        if (!checkedBoxes.length) return alert('KOSONG?! Rugi donk!!');
 
-        const nama = nameInput.value.trim();
-        const time = new Date().toLocaleString('id-ID');
-        const items = [];
+        const name = customerName.value.trim();
+        const timestamp = new Date().toLocaleString('id-ID');
+        const rentedCars = [];
         let total = 0;
 
-        checked.forEach(box => {
-            const card = box.closest('.card-car');
-            const carName = card.querySelector('.car-name').textContent;
-            const price = Number(card.querySelector('.car-price').textContent.replace(/\D/g, ''));
-            const days = Number(card.querySelector('input[type="number"]').value);
-            const startDate = card.querySelector('input[type="date"]').value;
+        checkedBoxes.forEach((checkbox) => {
+            const card = checkbox.closest('.card-car');
+            const name = checkbox.dataset.name;
+            const price = Number(checkbox.dataset.price);
+            const start = card.querySelector('.start-date').value;
+            const days = Number(card.querySelector('.duration').value);
             const subtotal = price * days;
+
             total += subtotal;
 
-            items.push({
-                namaMobil: carName,
-                tanggal: startDate,
+            rentedCars.push({
+                namaMobil: name,
+                tanggal: start,
                 durasi: days,
                 hargaPerHari: price,
                 subtotal: subtotal
@@ -115,72 +121,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const newOrder = {
-            namaPelanggan: nama,
-            waktuPemesanan: time,
-            mobil: items,
+            namaPelanggan: name,
+            waktuPemesanan: timestamp,
+            mobil: rentedCars,
             totalHarga: total
         };
-        const orders = JSON.parse(localStorage.getItem('orders')) || [];
-        orders.push(newOrder);
+
+        const allOrders = JSON.parse(localStorage.getItem('orders')) || [];
+        allOrders.push(newOrder);
         console.log('Pesanan ditambahkan:', newOrder);
-        localStorage.setItem('orders', JSON.stringify(orders));
-        renderOrders();
+        localStorage.setItem('orders', JSON.stringify(allOrders));
+
+        updateOrders();
         resetForm();
     });
 
     function resetForm() {
-        document.querySelectorAll('.car-checkbox').forEach(cb => {
-            cb.checked = false;
-            cb.dispatchEvent(new Event('change'));
+        document.querySelectorAll('.car-checkbox').forEach((checkbox) => {
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event('change'));
         });
 
-        document.querySelectorAll('.rental-inputs').forEach(inputBox => {
-            const dateInput = inputBox.querySelector('input[type="date"]');
-            const numberInput = inputBox.querySelector('input[type="number"]');
-            const today = new Date().toISOString().split('T')[0];
-            if (dateInput) dateInput.value = today;
-            if (numberInput) numberInput.value = 1;
+        document.querySelectorAll('.start-date').forEach((input) => {
+            input.value = new Date().toISOString().split('T')[0];
         });
 
-        nameInput.value = '';
+        document.querySelectorAll('.duration').forEach((input) => {
+            input.value = 1;
+        });
+
+        customerName.value = '';
         orderDetail.textContent = '';
     }
 
-    function renderOrders() {
-        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    function updateOrders() {
+        const allOrders = JSON.parse(localStorage.getItem('orders')) || [];
         customerOrders.innerHTML = '';
 
-        orders.forEach((order, index) => {
-            const box = document.createElement('div');
-            box.className = 'order-box';
+        allOrders.forEach((order, index) => {
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-box';
 
             const title = document.createElement('h4');
             title.textContent = `${order.namaPelanggan} – ${order.waktuPemesanan}`;
 
-            const ul = document.createElement('ul');
-            order.mobil.forEach(m => {
-                const li = document.createElement('li');
-                li.textContent = `${m.namaMobil} – ${m.tanggal} – ${m.durasi} hari – Rp ${m.subtotal.toLocaleString('id-ID')}`;
-                ul.appendChild(li);
+            const orderList = document.createElement('ul');
+            order.mobil.forEach((car) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${car.namaMobil} – ${car.tanggal} – ${car.durasi} hari – Rp ${car.subtotal.toLocaleString('id-ID')}`;
+                orderList.appendChild(listItem);
             });
 
-            const total = document.createElement('p');
-            total.innerHTML = `<strong>Total:</strong> Rp ${order.totalHarga.toLocaleString('id-ID')}`;
+            const totalText = document.createElement('p');
+            totalText.innerHTML = `<strong>Total:</strong> Rp ${order.totalHarga.toLocaleString('id-ID')}`;
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Hapus';
-            deleteBtn.className = 'delete-button';
-            deleteBtn.addEventListener('click', () => {
-                console.log('Pesanan terhapus:', orders[index]);
-                orders.splice(index, 1);
-                localStorage.setItem('orders', JSON.stringify(orders));
-                renderOrders();
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Hapus';
+            deleteButton.className = 'delete-button';
+            deleteButton.addEventListener('click', () => {
+                console.log('Pesanan terhapus:', allOrders[index]);
+                allOrders.splice(index, 1);
+                localStorage.setItem('orders', JSON.stringify(allOrders));
+                updateOrders();
             });
 
-            box.append(title, ul, total, deleteBtn);
-            customerOrders.appendChild(box);
+            orderCard.append(title, orderList, totalText, deleteButton);
+            customerOrders.appendChild(orderCard);
         });
     }
 
-    renderOrders();
+    updateOrders();
 });

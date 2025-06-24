@@ -128,6 +128,7 @@ body {
     cursor: pointer;
     width: 100%;
     font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
 .customer-form button:hover {
@@ -144,7 +145,6 @@ body {
     background-color: #fdfdfd;
     padding: 1rem;
     border-radius: 6px;
-    min-height: 200px;
     border: 1px solid #ccc;
 }
 
